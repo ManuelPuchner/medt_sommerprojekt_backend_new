@@ -1,0 +1,48 @@
+services:
+  db:
+    container_name: postgres-betterphp-3ahitm
+    image: postgres:15.2-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    ports:
+      - 6543:5432
+    volumes:
+      - ./db-postgres-betterphp/db:/var/lib/postgresql/data
+      - ./db-postgres-betterphp/import:/import
+    networks:
+      - postgres-betterphp
+
+  pgadmin:
+    container_name: pgadmin-betterphp-3ahitm
+    image: dpage/pgadmin4:6.20
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - ./db-postgres-betterphp/pgadmin:/root/.pgadmin
+    ports:
+      - 8090:80
+    networks:
+      - postgres-betterphp
+    restart: unless-stopped
+
+  web:
+    container_name: web-betterphp-3ahitm
+    build:
+        context: .
+        dockerfile: PHP.Dockerfile
+    volumes:
+      - ./dist:/var/www/html
+      - ./betterphp/utils:/var/www/betterphp/utils
+    ports:
+      - 8080:80
+    networks:
+        - postgres-betterphp
+
+networks:
+  postgres-betterphp:
+    driver: bridge
