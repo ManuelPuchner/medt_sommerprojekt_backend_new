@@ -1,0 +1,76 @@
+### Register
+POST {{BASE_URL}}/api/auth/register/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "ManuelPuchenr",
+    "password": "test1234",
+    "email": "m.puchner@students.htl-leonding.ac.at"
+}
+
+
+### Login
+POST {{BASE_URL}}/api/auth/login/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "m.puchner@students.htl-leonding.ac.at",
+    "password": "test1234"
+}
+
+
+### GetBy Name
+GET {{BASE_URL}}/api/user/getBy/?by=name&value=test HTTP/1.1
+
+
+### GetBy Id
+GET {{BASE_URL}}/api/user/getBy/?by=id&value=25 HTTP/1.1
+
+
+### GetBy Session
+GET {{BASE_URL}}/api/user/getBy/?by=session HTTP/1.1
+
+
+### Get liked posts
+GET {{BASE_URL}}/api/user/liked-posts/ HTTP/1.1
+
+### Create Post
+POST {{BASE_URL}}/api/post/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "image": "https://picsum.photos/seed/asdfaölksdj/400/400",
+    "description": "Test"
+}
+
+### Get all posts
+GET {{BASE_URL}}/api/post/?page=1&length=10 HTTP/1.1
+
+### Get post by id
+GET {{BASE_URL}}/api/post/48 HTTP/1.1
+
+### Delete Post
+DELETE {{BASE_URL}}/api/post/44 HTTP/1.1
+
+### Like/unlike Post
+PUT {{BASE_URL}}/api/post/like/48 HTTP/1.1
+
+### Get post likes
+GET {{BASE_URL}}/api/post/48/likes HTTP/1.1
+
+### Get post like count
+GET {{BASE_URL}}/api/post/48/likes/count HTTP/1.1
+
+### Comment post
+POST {{BASE_URL}}/api/comment/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "postId": 48,
+    "comment_text": "moin meister"
+}
+
+
+### Delete comment
+DELETE {{BASE_URL}}/api/comment/3 HTTP/1.1
+
