@@ -34,7 +34,7 @@ class PostService
         $post = PostController::getInstance()->createPost($image, $description);
 
         if ($post === false) {
-            return Response::error(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Post could not be created");
+            throw new ApiException(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Post could not be created");
         }
 
         return Response::created("Post created successfully", $post);
