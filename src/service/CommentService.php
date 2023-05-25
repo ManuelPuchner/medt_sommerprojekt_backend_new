@@ -2,6 +2,7 @@
 
 namespace service;
 
+use betterphp\utils\ApiException;
 use betterphp\utils\attributes\BodyParam;
 use betterphp\utils\attributes\DELETE;
 use betterphp\utils\attributes\PathParam;
@@ -25,7 +26,7 @@ class CommentService
         $sessionUserId = unserialize($_SESSION['user'])->id;
 
         if($comment == null || $postId == null) {
-            return Response::error(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Comment or postId is null");
+            throw new ApiException(HttpErrorCodes::HTTP_BAD_REQUEST, 'Comment or postId is null');
         }
 
         $commentObj = CommentController::getInstance()->createComment($comment, $postId, $sessionUserId);
@@ -42,7 +43,7 @@ class CommentService
     #[ProtectedRoute]
     public function deleteComment(#[PathParam] string $commentId): Response {
         if($commentId == null) {
-            return Response::error(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Comment id is null");
+            throw new ApiException(HttpErrorCodes::HTTP_BAD_REQUEST, 'Comment id is null');
         }
 
         $commentObj = CommentController::getInstance()->deleteComment($commentId);

@@ -14,6 +14,9 @@ use Exception;
 #[Entity('HL_Post')]
 class Post implements \JsonSerializable
 {
+
+    private static string $IMAGE_PATH_PREFIX;
+
     #[Column([
         'name' => 'p_id',
         'type' => 'BIGINT',
@@ -57,6 +60,8 @@ class Post implements \JsonSerializable
 
     private ?bool $likedByUser;
 
+    private ?bool $isPostedByUser;
+
     public function __construct(int $id, string $image, string $description, DateTime $date, int $userId)
     {
         $this->id = $id;
@@ -64,6 +69,10 @@ class Post implements \JsonSerializable
         $this->description = $description;
         $this->date = $date;
         $this->userId = $userId;
+
+        $env = parse_ini_file($_SERVER["DOCUMENT_ROOT"]. '/.env');
+
+        self::$IMAGE_PATH_PREFIX = $env['SERVER_URL'] . '/api/image/?img=';
     }
 
     public function __get(string $name)
@@ -113,6 +122,12 @@ class Post implements \JsonSerializable
             }
             return $this->likedByUser;
         }
+        if($name === 'isPostedByUser'){
+            if(!isset($this->isPostedByUser)){
+                $this->isPostedByUser = PostController::getInstance()->isPostedByUser($this->id);
+            }
+            return $this->isPostedByUser;
+        }
         throw new Exception("Property $name does not exist");
     }
 
@@ -137,7 +152,7 @@ class Post implements \JsonSerializable
     {
         $postJson = [
             'id' => $this->id,
-            'image' => $this->image,
+            'image' => self::$IMAGE_PATH_PREFIX . $this->image,
             'description' => $this->description,
             'date' => $this->date,
             'userId' => $this->userId,
@@ -162,6 +177,11 @@ class Post implements \JsonSerializable
         if(isset($this->likedByUser)){
             $postJson['isLikedByUser'] = $this->likedByUser;
         }
+
+        if (isset($this->isPostedByUser)) {
+            $postJson['isPostedByUser'] = $this->isPostedByUser;
+        }
+
         return $postJson;
     }
 

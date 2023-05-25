@@ -28,12 +28,12 @@ class PostService
         $description = $body['description'];
 
         if($image == null || $description == null) {
-            return Response::error(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Image or description is null");
+            throw new ApiException(HttpErrorCodes::HTTP_BAD_REQUEST, "Image or description is null");
         }
 
         $post = PostController::getInstance()->createPost($image, $description);
 
-        if (!$post) {
+        if ($post === false) {
             return Response::error(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Post could not be created");
         }
 
@@ -46,7 +46,7 @@ class PostService
     public function getAllPosts(#[QueryParam] $page, #[QueryParam] $length): Response {
 
         if(!isset($page) || !isset($length)) {
-            return Response::error(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Page or length is null");
+            throw new ApiException(HttpErrorCodes::HTTP_BAD_REQUEST, "Page or length is null");
         }
 
         $posts = PostController::getInstance()->getAllPostsPaginated($page, $length);
@@ -58,10 +58,11 @@ class PostService
             $post->user;
             $post->likeCount;
             $post->likedByUser;
+            $post->isPostedByUser;
         }
 
         if ($posts === false) {
-            return Response::error(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Posts could not be fetched");
+            throw new ApiException(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Posts could not be fetched");
         }
 
         return Response::ok("Posts fetched successfully", $posts);
@@ -74,7 +75,7 @@ class PostService
         $post = PostController::getInstance()->getPostById($id);
 
         if ($post === false) {
-            return Response::error(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Post could not be fetched");
+            throw new ApiException(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Post could not be fetched");
         }
 
         $comments = $post->comments;
@@ -93,7 +94,7 @@ class PostService
         $deleted = PostController::getInstance()->deletePost($id);
 
         if (!$deleted) {
-            return Response::error(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Post could not be deleted");
+            throw new ApiException(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Post could not be deleted");
         }
 
         return Response::ok("Post deleted successfully");

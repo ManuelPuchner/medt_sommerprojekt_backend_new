@@ -5,6 +5,7 @@ require_once dirname(__DIR__) . '/../betterphp/utils/Controller.php';
 
 use betterphp\utils\ApiException;
 use betterphp\utils\Controller;
+use betterphp\utils\HttpErrorCodes;
 use DateTime;
 use Exception;
 use model\Like;
@@ -44,6 +45,10 @@ class PostController extends Controller
 
     public function deletePost($id): bool
     {
+        if(!$this->isPostedByUser($id)) {
+            throw new ApiException(HttpErrorCodes::HTTP_FORBIDDEN, 'You are not allowed to delete this post');
+        }
+
         $stmt = self::$connection->prepare('DELETE FROM HL_Post WHERE p_id = :id');
         $stmt->bindParam('id', $id);
 
@@ -179,6 +184,23 @@ class PostController extends Controller
         $sessionUserId = unserialize($_SESSION['user'])->id;
 
         $stmt = self::$connection->prepare('SELECT * FROM HL_Like WHERE l_p_id = :postId AND l_u_id = :userId');
+        $stmt->bindParam('postId', $id);
+        $stmt->bindParam('userId', $sessionUserId);
+        $stmt->execute();
+
+        $result = $stmt->fetch();
+        if (!$result) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function isPostedByUser(int $id): bool
+    {
+        $sessionUserId = unserialize($_SESSION['user'])->id;
+
+        $stmt = self::$connection->prepare('SELECT * FROM HL_Post WHERE p_id = :postId AND p_u_id = :userId');
         $stmt->bindParam('postId', $id);
         $stmt->bindParam('userId', $sessionUserId);
         $stmt->execute();
