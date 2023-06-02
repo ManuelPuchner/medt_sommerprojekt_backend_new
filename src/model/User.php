@@ -7,6 +7,7 @@ use betterphp\Orm\Entity;
 use betterphp\Orm;
 use betterphp\utils\ApiException;
 use betterphp\utils\HttpErrorCodes;
+use controller\PostController;
 use Exception;
 use JsonSerializable;
 
@@ -46,6 +47,8 @@ class User implements JsonSerializable
     ])]
     private string $userType;
 
+    private array $posts;
+
 
     public function __get(string $name)
     {
@@ -63,6 +66,12 @@ class User implements JsonSerializable
         }
         if ($name === 'userType') {
             return $this->userType;
+        }
+        if($name === 'posts') {
+            if(!isset($this->posts)) {
+                $this->posts = PostController::getInstance()->getPostsByUser($this->id);
+            }
+            return $this->posts;
         }
         throw new Exception('Property ' . $name . ' not found');
     }
@@ -101,13 +110,19 @@ class User implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return [
+        $json = [
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
             'password' => $this->password,
             'userType' => $this->userType,
         ];
+
+        if(isset($this->posts)) {
+            $json["posts"] = $this->posts;
+        }
+
+        return $json;
     }
 
     public static function getMock(): User

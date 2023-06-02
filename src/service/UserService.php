@@ -30,7 +30,7 @@ class UserService
         } else {
             throw new ApiException(HttpErrorCodes::HTTP_NOT_IMPLEMENTED, 'Unsupported search parameter');
         }
-
+        $user->posts;
 
         return Response::ok('User fetched successfully', $user);
     }

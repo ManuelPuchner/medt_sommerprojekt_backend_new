@@ -213,5 +213,25 @@ class PostController extends Controller
         return true;
     }
 
+    public function getPostsByUser(int $userId): array|false {
+        $stmt = self::$connection->prepare("SELECT * FROM hl_post where p_u_id = :userId order by p_date");
+        $stmt->bindParam("userId", $userId);
+        $stmt->execute();
+
+        $result = $stmt->fetchAll();
+
+        if($result === false) {
+            return false;
+        }
+
+        $posts = [];
+
+        foreach ($result as $row) {
+            $posts[]=Post::getFromRow($row);
+        }
+
+        return $posts;
+    }
+
 
 }
