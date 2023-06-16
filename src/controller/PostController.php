@@ -10,6 +10,7 @@ use DateTime;
 use Exception;
 use model\Like;
 use model\Post;
+use PDO;
 
 #[\betterphp\utils\attributes\Controller]
 class PostController extends Controller
@@ -32,14 +33,13 @@ class PostController extends Controller
         $stmt->bindParam('description', $description);
         $stmt->bindParam('date', $formatedDate);
         $stmt->bindParam('userId', $userId);
-        $stmt->bindParam('important', $important);
+        $stmt->bindParam('important', $important, PDO::PARAM_BOOL);
 
         try {
             $stmt->execute();
         } catch (Exception $e) {
             return false;
         }
-
         $id = self::$connection->lastInsertId();
 
         return new Post(

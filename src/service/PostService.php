@@ -32,6 +32,10 @@ class PostService
             throw new ApiException(HttpErrorCodes::HTTP_BAD_REQUEST, "Image or description is null");
         }
 
+        if(!isset($important)) {
+            $important = false;
+        }
+
         $post = PostController::getInstance()->createPost($image, $description, $important);
 
         if ($post === false) {

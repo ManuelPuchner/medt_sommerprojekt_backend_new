@@ -160,11 +160,14 @@ class Post implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
+        $timezonedDate = clone $this->date;
+        $timezonedDate->setTimezone(new \DateTimeZone('Europe/Berlin'));
+
         $postJson = [
             'id' => $this->id,
             'image' => self::$IMAGE_PATH_PREFIX . $this->image,
             'description' => $this->description,
-            'date' => $this->date,
+            'date' => $timezonedDate->format('Y-m-d H:i:s'),
             'userId' => $this->userId,
             'important' => $this->important
         ];

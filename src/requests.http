@@ -49,9 +49,7 @@ Content-Type: application/json
 
 {
     "image": "https://picsum.photos/seed/asdfaölksdj/400/400",
-    "description": "Test",
-    "important": true
-}
+    "description": "Test"}
 
 ### Get all posts
 GET {{BASE_URL}}/api/post/?page=1&length=10 HTTP/1.1
