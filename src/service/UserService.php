@@ -6,12 +6,14 @@ use betterphp\utils\ApiException;
 use betterphp\utils\attributes\BodyParam;
 use betterphp\utils\attributes\GET;
 use betterphp\utils\attributes\POST;
+use betterphp\utils\attributes\ProtectedRoute;
 use betterphp\utils\attributes\QueryParam;
 use betterphp\utils\attributes\Route;
 use betterphp\utils\attributes\Service;
 use betterphp\utils\HttpErrorCodes;
 use betterphp\utils\Response;
 use controller\AuthController;
+use controller\PostController;
 use controller\UserController;
 
 #[Service]
@@ -48,7 +50,7 @@ class UserService
             throw new ApiException(HttpErrorCodes::HTTP_BAD_REQUEST, 'Missing required fields');
         }
         $user = $authController->register($username, $password, $email);
-        if (!$user) {
+        if ($user === false) {
             throw new ApiException(HttpErrorCodes::HTTP_BAD_REQUEST, 'User already exists');
         }
 
@@ -78,9 +80,17 @@ class UserService
 
     #[Route('/user/liked-posts')]
     #[GET]
+    #[ProtectedRoute]
     public function getLikedPosts(): Response{
-        $userController = UserController::getInstance();
-        $posts = $userController->getLikedPosts();
+        $postController = PostController::getInstance();
+
+        $userId = unserialize($_SESSION["user"])->id;
+
+        $posts = $postController->getPostsLikedByUser($userId);
+
+        if($posts === false) {
+            throw new ApiException(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Posts could not be fetched");
+        }
 
         return Response::ok('Posts fetched successfully', $posts);
     }

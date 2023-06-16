@@ -26,18 +26,42 @@ class PostService
     public function createPost(#[BodyParam] $body): Response {
         $image = $body['image'];
         $description = $body['description'];
+        $important = $body['important'];
 
         if($image == null || $description == null) {
             throw new ApiException(HttpErrorCodes::HTTP_BAD_REQUEST, "Image or description is null");
         }
 
-        $post = PostController::getInstance()->createPost($image, $description);
+        $post = PostController::getInstance()->createPost($image, $description, $important);
 
         if ($post === false) {
             throw new ApiException(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Post could not be created");
         }
 
         return Response::created("Post created successfully", $post);
+    }
+
+    #[GET]
+    #[Route('/post/important')]
+    #[ProtectedRoute]
+    public function getImportantPosts(#[QueryParam] $page, #[QueryParam] $length): Response {
+        $posts = PostController::getInstance()->getImportantPostsPaginated($page, $length);
+
+        if ($posts === false) {
+            throw new ApiException(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Posts could not be fetched");
+        }
+
+        foreach ($posts as $post) {
+            $comments = $post->comments;
+            foreach ($comments as $comment)
+                $comment->user;
+            $post->user;
+            $post->likeCount;
+            $post->likedByUser;
+            $post->isPostedByUser;
+        }
+
+        return Response::ok("Posts fetched successfully", $posts);
     }
 
     #[GET]
@@ -49,7 +73,7 @@ class PostService
             throw new ApiException(HttpErrorCodes::HTTP_BAD_REQUEST, "Page or length is null");
         }
 
-        $posts = PostController::getInstance()->getAllPostsPaginated($page, $length);
+        $posts = PostController::getInstance()->getNormalPostsPaginated($page, $length);
 
         foreach ($posts as $post) {
             $comments = $post->comments;

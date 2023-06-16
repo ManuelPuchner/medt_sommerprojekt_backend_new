@@ -60,11 +60,4 @@ class UserController extends Controller
     {
         return unserialize($_SESSION['user']);
     }
-
-    public function getLikedPosts(): array
-    {
-        $posts = [];
-
-        return $posts;
-    }
 }

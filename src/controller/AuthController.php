@@ -35,11 +35,26 @@ class AuthController extends Controller
 
     public function register(string $username, string $password, string $email): false|User
     {
+        // verify email
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        $email_server = explode("@", $email)[1];
+
+        if($email_server !== "students.htl-leonding.ac.at" && $email_server !== "htl-leonding.ac.at") {
+            return false;
+        }
+
+        $userType = $email_server === "htl-leonding.ac.at" ? 'teacher' : 'student';
+
+
+
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = self::$connection->prepare('INSERT INTO HL_User (u_name, u_email, u_password) VALUES (:username, :email, :password)');
+        $stmt = self::$connection->prepare('INSERT INTO HL_User (u_name, u_email, u_password, u_usertype) VALUES (:username, :email, :password, :userType)');
         $stmt->bindParam('username', $username);
         $stmt->bindParam('email', $email);
         $stmt->bindParam('password', $hashed_password);
+        $stmt->bindParam('userType', $userType);
 
         try {
             $stmt->execute();

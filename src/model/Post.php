@@ -49,6 +49,12 @@ class Post implements \JsonSerializable
     ])]
     private int $userId;
 
+    #[Column([
+        'name' => 'p_important',
+        'type' => 'BOOLEAN'
+    ])]
+    private bool $important;
+
 
     private ?User $user;
 
@@ -62,13 +68,14 @@ class Post implements \JsonSerializable
 
     private ?bool $isPostedByUser;
 
-    public function __construct(int $id, string $image, string $description, DateTime $date, int $userId)
+    public function __construct(int $id, string $image, string $description, DateTime $date, bool $important, int $userId)
     {
         $this->id = $id;
         $this->image = $image;
         $this->description = $description;
         $this->date = $date;
         $this->userId = $userId;
+        $this->important = $important;
 
         $env = parse_ini_file($_SERVER["DOCUMENT_ROOT"]. '/.env');
 
@@ -91,6 +98,9 @@ class Post implements \JsonSerializable
         }
         if ($name === 'userId') {
             return $this->userId;
+        }
+        if ($name === 'important') {
+            return $this->important;
         }
         if($name === 'user'){
             if(!isset($this->user)){
@@ -156,6 +166,7 @@ class Post implements \JsonSerializable
             'description' => $this->description,
             'date' => $this->date,
             'userId' => $this->userId,
+            'important' => $this->important
         ];
 
         if(isset($this->user)){
@@ -192,6 +203,7 @@ class Post implements \JsonSerializable
             $row['p_image'],
             $row['p_description'],
             new DateTime($row['p_date']),
+            $row['p_important'],
             $row['p_u_id']
         );
     }

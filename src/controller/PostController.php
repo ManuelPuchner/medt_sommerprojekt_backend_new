@@ -14,17 +14,25 @@ use model\Post;
 #[\betterphp\utils\attributes\Controller]
 class PostController extends Controller
 {
-    public function createPost(string $image, string $description): false|Post {
+    public function createPost(string $image, string $description, bool $important): false|Post {
+
+        if($important) {
+            $isTeacher = unserialize($_SESSION['user'])->userType == 'teacher';
+            if($isTeacher === false) {
+                throw new ApiException(HttpErrorCodes::HTTP_FORBIDDEN, "Only teachers can create important posts");
+            }
+        }
+
         $date = new DateTime();
         $formatedDate = $date->format('Y-m-d H:i:s');
         $user = unserialize($_SESSION['user']);
         $userId = $user->id;
-        $stmt = self::$connection->prepare('INSERT INTO HL_Post (p_image, p_description, p_date, p_u_id) VALUES (:image, :description, :date, :userId)');
+        $stmt = self::$connection->prepare('INSERT INTO HL_Post (p_image, p_description, p_date, p_u_id, p_important) VALUES (:image, :description, :date, :userId, :important)');
         $stmt->bindParam('image', $image);
         $stmt->bindParam('description', $description);
-
         $stmt->bindParam('date', $formatedDate);
         $stmt->bindParam('userId', $userId);
+        $stmt->bindParam('important', $important);
 
         try {
             $stmt->execute();
@@ -39,6 +47,7 @@ class PostController extends Controller
             $image,
             $description,
             $date,
+            $important,
             $userId
         );
     }
@@ -72,6 +81,48 @@ class PostController extends Controller
     {
         $offset = ($page - 1) * $pageSize;
         $stmt = self::$connection->prepare('SELECT * FROM HL_Post order by p_date desc LIMIT :pageSize OFFSET :offset');
+        $stmt->bindParam('pageSize', $pageSize);
+        $stmt->bindParam('offset', $offset);
+        $stmt->execute();
+
+        $result = $stmt->fetchAll();
+
+        if ($result === false) {
+            return false;
+        }
+
+        $posts = [];
+        foreach ($result as $row) {
+            $posts[] = Post::getFromRow($row);
+        }
+
+        return $posts;
+    }
+
+    public function getNormalPostsPaginated($page, $pageSize) {
+        $offset = ($page - 1) * $pageSize;
+        $stmt = self::$connection->prepare('SELECT * FROM HL_Post where p_important = false order by p_date desc LIMIT :pageSize OFFSET :offset');
+        $stmt->bindParam('pageSize', $pageSize);
+        $stmt->bindParam('offset', $offset);
+        $stmt->execute();
+
+        $result = $stmt->fetchAll();
+
+        if ($result === false) {
+            return false;
+        }
+
+        $posts = [];
+        foreach ($result as $row) {
+            $posts[] = Post::getFromRow($row);
+        }
+
+        return $posts;
+    }
+
+    public function getImportantPostsPaginated($page, $pageSize) {
+        $offset = ($page - 1) * $pageSize;
+        $stmt = self::$connection->prepare('SELECT * FROM HL_Post where p_important = true order by p_date desc LIMIT :pageSize OFFSET :offset');
         $stmt->bindParam('pageSize', $pageSize);
         $stmt->bindParam('offset', $offset);
         $stmt->execute();
@@ -228,6 +279,28 @@ class PostController extends Controller
 
         foreach ($result as $row) {
             $posts[]=Post::getFromRow($row);
+        }
+
+        return $posts;
+    }
+
+    public function getPostsLikedByUser(int $userId): array|false
+    {
+        $stmt = self::$connection->prepare("select * from hl_post where p_id in (select l_p_id from hl_like where l_u_id = :userId)");
+        $stmt->bindParam("userId", $userId);
+        $stmt->execute();
+
+        $result = $stmt->fetchAll();
+
+        if($result === false) {
+            return false;
+        }
+
+        $posts = [];
+        foreach ($result as $row) {
+            $post=Post::getFromRow($row);
+            $post->user;
+            $posts[]=$post;
         }
 
         return $posts;
