@@ -1,0 +1,37 @@
+name: php
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  php-app:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: 3ahitm-medt-backend
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.0
+      - name: build app
+        run: php ./betterphp/cli/index.php
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build image
+        run: docker build . --tag $IMAGE_NAME 
+      - name: Push image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+
