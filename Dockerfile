@@ -18,7 +18,8 @@ RUN echo "DB_HOST=${DB_HOST}" >> /var/www/.env && \
     echo "DB_USER=${DB_USER}" >> /var/www/.env && \
     echo "DB_PW=${DB_PW}" >> /var/www/.env && \
     echo "DB_PORT=${DB_PORT}" >> /var/www/.env && \
-    echo "SERVER_URL=${SERVER_URL}" >> /var/www/.env && \
+    echo "SERVER_URL=${SERVER_URL}" >> /var/www/.env \
+
 COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
 
 RUN chown -R www-data:www-data /var/www/html
