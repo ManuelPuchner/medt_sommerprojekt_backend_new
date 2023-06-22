@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dreiahitm-medt
+  namespace: student-m-puchner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dreiahitm-medt
+  template:
+    metadata:
+      labels:
+        app: dreiahitm-medt
+    spec:
+      containers:
+        - name: dreiahitm-medt
+          image: ghcr.io/manuelpuchner/3ahitm-medt-backend:latest
+          volumeMounts:
+            - mountPath: /dist/images
+              name: dreiahitm-medt-files
+          envFrom:
+            - secretRef:
+                name: cle
+          ports:
+            - containerPort: 80
+      volumes:
+        - name: dreiahitm-medt-files
+          persistentVolumeClaim:
+            claimName: dreiahitm-medt-fileupload-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dreiahitm-medt-svc
+  namespace: student-m-puchner
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: dreiahitm-medt
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dreiahitm-medt
+  namespace: student-m-puchner
+spec:
+  rules:
+    - host: student.cloud.htl-leonding.ac.at
+      http:
+        paths:
+          - path: /m.puchner/htlife(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: dreiahitm-medt-svc
+                port:
+                  number: 80
