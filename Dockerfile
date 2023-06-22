@@ -1,7 +1,7 @@
 ARG DB_HOST
 ARG DB_NAME
 ARG DB_USER
-ARG DB_PW
+ARG DB_PASS
 ARG DB_PORT
 ARG SERVER_URL
 
@@ -16,7 +16,7 @@ COPY ./dist /var/www/html
 RUN echo "DB_HOST=${DB_HOST}" >> /var/www/.env && \
     echo "DB_NAME=${DB_NAME}" >> /var/www/.env && \
     echo "DB_USER=${DB_USER}" >> /var/www/.env && \
-    echo "DB_PW=${DB_PW}" >> /var/www/.env && \
+    echo "DB_PASS=${DB_PASS}" >> /var/www/.env && \
     echo "DB_PORT=${DB_PORT}" >> /var/www/.env && \
     echo "SERVER_URL=${SERVER_URL}" >> /var/www/.env \
 
