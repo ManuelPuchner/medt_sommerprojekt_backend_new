@@ -29,7 +29,7 @@ Content-Type: application/json
 
 
 ### GetBy Name
-GET {{BASE_URL}}/api/user/getBy/?by=name&value=test HTTP/1.1
+GET {{BASE_URL}}/api/user/getBy/?by=name&value=ManuelPuchner HTTP/1.1
 
 
 ### GetBy Id

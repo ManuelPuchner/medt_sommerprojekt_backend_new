@@ -19,6 +19,13 @@ use controller\UserController;
 #[Service]
 class UserService
 {
+
+    #[Route('/echo')]
+    #[GET]
+    public function echo(#[QueryParam] string $message): Response{
+        return Response::ok('Echo successful', $message);
+    }
+
     #[Route('/user/getBy')]
     #[GET]
     public function getBy(#[QueryParam] string $by, #[QueryParam] string $value): Response{
