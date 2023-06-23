@@ -31,7 +31,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: dreiahitm-medt-svc
+  name: dreiahitm-medt-backend-svc
   namespace: student-m-puchner
 spec:
   ports:
@@ -40,7 +40,7 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: dreiahitm-medt
+    app: dreiahitm-medt-backend
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

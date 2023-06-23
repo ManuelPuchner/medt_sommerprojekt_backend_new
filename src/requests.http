@@ -1,3 +1,6 @@
+GET {{BASE_URL}}/api/echo/ HTTP/1.1
+
+
 ### Register
 POST {{BASE_URL}}/api/auth/register/ HTTP/1.1
 Content-Type: application/json
@@ -49,7 +52,8 @@ Content-Type: application/json
 
 {
     "image": "https://picsum.photos/seed/asdfaölksdj/400/400",
-    "description": "Test"}
+    "description": "Test"
+}
 
 ### Get all posts
 GET {{BASE_URL}}/api/post/?page=1&length=10 HTTP/1.1

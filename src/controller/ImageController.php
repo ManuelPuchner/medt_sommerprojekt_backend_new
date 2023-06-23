@@ -52,6 +52,8 @@ class ImageController extends Controller
     public function getImage(string $imgName): string {
         $imagePath = self::$IMAGE_UPLOAD_DIR . $imgName;
 
+
+
         if (!file_exists($imagePath)) {
             throw new ApiException(HttpErrorCodes::HTTP_NOT_FOUND, "Image not found");
         }

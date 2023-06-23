@@ -79,7 +79,7 @@ class Post implements \JsonSerializable
 
         $env = parse_ini_file($_SERVER["DOCUMENT_ROOT"]. '/.env');
 
-        self::$IMAGE_PATH_PREFIX = $env['SERVER_URL'] . '/api/image/?img=';
+        self::$IMAGE_PATH_PREFIX = $env['SERVER_URL'] . '/m.puchner/htlife/api/image/?img=';
     }
 
     public function __get(string $name)

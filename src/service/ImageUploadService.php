@@ -55,6 +55,7 @@ class ImageUploadService
             throw new ApiException(HttpErrorCodes::HTTP_INTERNAL_SERVER_ERROR, "Image could not be found");
         }
 
+
         header('Content-Type: image/png');
         echo $image;
         exit();
