@@ -17,11 +17,10 @@ spec:
         - name: dreiahitm-medt
           image: ghcr.io/manuelpuchner/3ahitm-medt-backend:latest
           volumeMounts:
-            - mountPath: /dist/images
+            - mountPath: /var/www/images
               name: dreiahitm-medt-files
-          #envFrom:
-          #  - secretRef:
-          #      name: cle
+            - mountPath: /var/www/env
+              name: dreiahitm-medt-files
           ports:
             - containerPort: 80
       volumes:

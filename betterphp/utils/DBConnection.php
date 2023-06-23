@@ -20,7 +20,7 @@ class DBConnection
     private function __construct()
     {
         // get connection string from .env file
-        $envFilePath = $_SERVER["DOCUMENT_ROOT"]. '/.env';
+        $envFilePath = $_SERVER["DOCUMENT_ROOT"]. '/../env/.env';
 
         $env = parse_ini_file($envFilePath);
 

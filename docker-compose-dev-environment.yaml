@@ -37,6 +37,7 @@ services:
       dockerfile: PHP.Dockerfile
     volumes:
       - ./dist:/var/www/html
+      - ./env:/var/www/env
       - ./betterphp/utils:/var/www/betterphp/utils
     ports:
       - 8080:80
